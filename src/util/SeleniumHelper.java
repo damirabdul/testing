@@ -1,0 +1,58 @@
+package util;
+
+import static org.junit.Assert.fail;
+
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
+
+public abstract class SeleniumHelper {
+
+	protected boolean acceptNextAlert = true;
+	protected StringBuffer verificationErrors = new StringBuffer();
+	protected WebDriver driver = DriverFactory.getInstance();
+
+	public void tearDown() throws Exception {
+		driver.quit();
+		String verificationErrorString = verificationErrors.toString();
+		if (!"".equals(verificationErrorString)) {
+			fail(verificationErrorString);
+		}
+	}
+
+	protected boolean isElementPresent(By by) {
+		try {
+			driver.findElement(by);
+			return true;
+		} catch (NoSuchElementException e) {
+			return false;
+		}
+	}
+
+	protected boolean isAlertPresent() {
+		try {
+			driver.switchTo().alert();
+			return true;
+		} catch (NoAlertPresentException e) {
+			return false;
+		}
+	}
+
+	protected String closeAlertAndGetItsText() {
+		try {
+			Alert alert = driver.switchTo().alert();
+			String alertText = alert.getText();
+			if (acceptNextAlert) {
+				alert.accept();
+			} else {
+				alert.dismiss();
+			}
+			return alertText;
+		} finally {
+			acceptNextAlert = true;
+		}
+	}
+
+}
